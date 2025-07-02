@@ -187,7 +187,7 @@ export default function DashboardPostCard({
       <div className="absolute flex flex-row justify-between items-center left-[10px] top-[140px] w-[140px] h-[12px] md:left-[14px] md:top-[230px] md:w-[170px] md:h-[18px]">
         <button
           onClick={onView}
-          className="flex flex-row items-center gap-1 w-[35px] md:w-[45px] group"
+          className="flex flex-row items-center gap-1 w-[45px] md:w-[60px] group"
         >
           <Image
             src="/user/brain.png"
@@ -202,7 +202,7 @@ export default function DashboardPostCard({
         </button>
         <button
           onClick={onEdit}
-          className="flex flex-row items-center gap-1 w-[30px] md:w-[40px] group"
+          className="flex flex-row items-center gap-1 w-[40px] md:w-[55px] group"
         >
           {/* Edit icon (pencil) */}
           <svg
