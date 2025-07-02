@@ -42,7 +42,7 @@ export default function DashboardPostCard({
   };
 
   return (
-    <div className="relative box-border w-[185px] h-[200px] md:w-[222px] md:h-[300px] bg-white border border-gray-200 rounded-[8px] md:rounded-[12px] overflow-hidden shadow-sm">
+    <div className="relative box-border w-[165px] h-[200px] md:w-[222px] md:h-[300px] bg-white border border-gray-200 rounded-[8px] md:rounded-[12px] overflow-hidden shadow-sm">
       {/* Top image */}
       <div className="w-full h-[80px] md:h-[140px] relative">
         <Image
