@@ -1,13 +1,17 @@
 "use client";
 import React, { useState } from "react";
 import { RiMenu2Line } from "react-icons/ri";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export default function Sidebar() {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
   // Navigation items and placeholder SVGs
   const navItems = [
     {
       label: "Dashboard",
+      href: "/dashboard",
       icon: (
         <svg
           width="20"
@@ -53,6 +57,7 @@ export default function Sidebar() {
     },
     {
       label: "My Post",
+      href: "/dashboard/posts",
       icon: (
         <svg
           width="20"
@@ -81,6 +86,7 @@ export default function Sidebar() {
     },
     {
       label: "Post Generator",
+      href: "/dashboard/generator",
       icon: (
         <svg
           width="27"
@@ -100,6 +106,7 @@ export default function Sidebar() {
     },
     {
       label: "Templates",
+      href: "/dashboard/templates",
       icon: (
         <svg
           width="14"
@@ -117,6 +124,7 @@ export default function Sidebar() {
     },
     {
       label: "Infographics",
+      href: "/dashboard/infographics",
       icon: (
         <svg
           width="18"
@@ -137,6 +145,7 @@ export default function Sidebar() {
     },
     {
       label: "Scheduler",
+      href: "/dashboard/scheduler",
       icon: (
         <svg
           width="20"
@@ -171,6 +180,7 @@ export default function Sidebar() {
     },
     {
       label: "Analytics",
+      href: "/dashboard/analytics",
       icon: (
         <svg
           width="25"
@@ -188,6 +198,7 @@ export default function Sidebar() {
     },
     {
       label: "Brand Kit",
+      href: "/dashboard/brand-kit",
       icon: (
         <svg
           width="20"
@@ -214,6 +225,7 @@ export default function Sidebar() {
     },
     {
       label: "Settings",
+      href: "/dashboard/settings",
       icon: (
         <svg
           width="20"
@@ -263,42 +275,51 @@ export default function Sidebar() {
           </span>
         </div>
         {/* Navigation */}
-        <nav className="flex flex-col items-center gap-4 lg:gap-[31px]">
-          {/* Dashboard active button */}
-          <div className="w-[85%] flex items-center gap-3 px-4 py-2.5 rounded-xl border border-[#EAAAFF] bg-gradient-to-r from-[#EDDCFD] to-[#F8DAED] shadow-md mb-2">
-            <div className="w-5 h-5 flex-shrink-0 flex items-center justify-center">
-              {React.cloneElement(
-                navItems[0].icon,
-                { width: "100%", height: "100%" }
-              )}
-            </div>
-            <span className="text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px] font-medium text-black">
-              {navItems[0].label}
-            </span>
-          </div>
-          {/* Other nav items */}
-          <div className="flex flex-col items-start gap-3 lg:gap-[34px] w-[80%]">
-            {navItems
-              .slice(1)
-              .map((item, idx) => (
-                <div
+        <nav className="flex flex-col items-center gap-2 lg:gap-4">
+          {/* All nav items with dynamic active styling */}
+          <div className="flex flex-col items-start gap-2 lg:gap-3 w-[80%]">
+            {navItems.map((item, idx) => {
+              const isActive =
+                pathname === item.href;
+              return (
+                <Link
                   key={item.label}
-                  className="flex items-center gap-2 w-full"
+                  href={item.href}
+                  className={`w-full transition-all duration-200 ${
+                    isActive
+                      ? "w-[85%]"
+                      : "hover:bg-gray-50 px-2 py-1 rounded-lg"
+                  }`}
                 >
-                  <div className="w-5 h-5 flex-shrink-0 flex items-center justify-center">
-                    {React.cloneElement(
-                      item.icon,
-                      {
-                        width: "100%",
-                        height: "100%",
-                      }
-                    )}
+                  <div
+                    className={`flex items-center gap-3 px-4 py-1.5 rounded-xl transition-all duration-200 ${
+                      isActive
+                        ? "border border-[#EAAAFF] bg-gradient-to-r from-[#EDDCFD] to-[#F8DAED] shadow-md hover:shadow-lg"
+                        : "hover:bg-gray-50"
+                    }`}
+                  >
+                    <div className="w-5 h-5 flex-shrink-0 flex items-center justify-center">
+                      {React.cloneElement(
+                        item.icon,
+                        {
+                          width: "100%",
+                          height: "100%",
+                        }
+                      )}
+                    </div>
+                    <span
+                      className={`text-[11px] sm:text-[12px] md:text-[13px] lg:text-[14px] font-medium ${
+                        isActive
+                          ? "text-black"
+                          : "text-[#64748B]"
+                      }`}
+                    >
+                      {item.label}
+                    </span>
                   </div>
-                  <span className="text-[11px] sm:text-[12px] md:text-[13px] lg:text-[14px] font-medium text-[#64748B]">
-                    {item.label}
-                  </span>
-                </div>
-              ))}
+                </Link>
+              );
+            })}
           </div>
         </nav>
       </aside>
