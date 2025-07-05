@@ -31,13 +31,11 @@ export default function DashboardPostCard({
 
   // Define the onEdit function inside the component
   const onEdit = () => {
-    // TODO: Implement edit logic here (e.g., open modal, navigate, etc.)
     alert(`Edit post: ${title}`);
   };
 
   // Define the onView function inside the component
   const onView = () => {
-    // TODO: Implement view logic here (e.g., open modal, navigate, etc.)
     alert(`View post: ${title}`);
   };
 
@@ -187,27 +185,27 @@ export default function DashboardPostCard({
       <div className="absolute flex flex-row justify-between items-center left-[10px] top-[140px] w-[140px] h-[12px] md:left-[14px] md:top-[230px] md:w-[170px] md:h-[18px]">
         <button
           onClick={onView}
-          className="flex flex-row items-center gap-1 w-[45px] md:w-[60px] group"
+          className="flex flex-row items-center gap-1 w-[60px] md:w-[60px] group"
         >
           <Image
             src="/user/brain.png"
             alt="view"
-            width={10}
-            height={10}
+            width={14}
+            height={14}
             className="md:w-4 md:h-4"
           />
-          <span className="font-medium text-[7px] md:text-[11px] text-[#64748B] leading-[10px] md:leading-[14px] group-hover:underline">
+          <span className="font-medium text-[12px] md:text-[11px] text-[#64748B] leading-[14px] md:leading-[14px] group-hover:underline">
             View
           </span>
         </button>
         <button
           onClick={onEdit}
-          className="flex flex-row items-center gap-1 w-[40px] md:w-[55px] group"
+          className="flex flex-row items-center gap-1 w-[50px] md:w-[55px] group"
         >
           {/* Edit icon (pencil) */}
           <svg
-            width="10"
-            height="10"
+            width="14"
+            height="14"
             className="md:w-4 md:h-4"
             fill="none"
             viewBox="0 0 24 24"
@@ -218,7 +216,7 @@ export default function DashboardPostCard({
               strokeWidth="1.2"
             />
           </svg>
-          <span className="font-medium text-[7px] md:text-[11px] text-[#64748B] leading-[10px] md:leading-[14px] group-hover:underline">
+          <span className="font-medium text-[12px] md:text-[11px] text-[#64748B] leading-[14px] md:leading-[14px] group-hover:underline">
             Edit
           </span>
         </button>

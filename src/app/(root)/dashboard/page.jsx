@@ -64,7 +64,7 @@ const dummyPosts = [
 
 export default function page() {
   return (
-    <div className="relative min-h-screen bg-[#F8FAFC]">
+    <div className="relative min-h-screen bg-[#F8FAFC] md:left-[282px] md:w-[calc(100%-282px)]">
       <DashboardHeader />
       <div
         className="pt-[35px] max-w-[100vw]"
@@ -73,12 +73,7 @@ export default function page() {
         <FeatureTools />
         <DashboardStats />
         {/* Add padding to prevent content from being hidden behind the fixed header */}
-        <div
-          className="flex flex-row flex-wrap gap-1 md:gap-6 mt-8 md:left-[282px] md:w-[calc(100%-282px)] relative"
-          style={{
-            justifyContent: "space-around",
-          }}
-        >
+        <div className="flex flex-row flex-wrap gap-6 mt-8 relative">
           {dummyPosts
             .slice(0, 5)
             .map((post, idx) => (

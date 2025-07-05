@@ -52,7 +52,7 @@ const stats = [
 export default function DashboardStats() {
   return (
     <div
-      className="w-full md:w-[calc(100%-282px)] ml-auto mt-6 md:mt-[32px] max-w-full flex flex-wrap justify-center-safe"
+      className="w-full  ml-auto mt-6 md:mt-[32px] max-w-full flex flex-wrap justify-center-safe"
       style={{ maxWidth: "100%", gap: "25px" }}
     >
       {stats.map((stat, i) => (

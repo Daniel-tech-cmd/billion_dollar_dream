@@ -133,7 +133,7 @@ const tools = [
 export default function FeatureTools() {
   return (
     <div
-      className="relative w-full md:w-[calc(100%-282px)] ml-auto mt-6 md:mt-[32px] bg-white border border-[#E5E7EB] shadow-sm rounded-[12px] px-2 md:px-8 py-4 md:py-6"
+      className="relative w-full  ml-auto mt-6 md:mt-[32px] bg-white border border-[#E5E7EB] shadow-sm rounded-[12px] px-2 md:px-8 py-4 md:py-6"
       style={{
         boxShadow:
           "0px 0px 0px rgba(0,0,0,0.25), 0px 0px 4px rgba(0,0,0,0.25)",
