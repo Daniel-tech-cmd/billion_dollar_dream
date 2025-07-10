@@ -1,36 +1,106 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# InstaGlow AI
 
-## Getting Started
+AI-powered Instagram content creation platform.
 
-First, run the development server:
+## Features
+
+- AI-powered content generation
+- Instagram OAuth integration
+- Email/password authentication
+- User dashboard with analytics
+- Content scheduling and management
+
+## Setup
+
+### Prerequisites
+
+- Node.js 18+
+- MongoDB database
+- Instagram Developer Account
+
+### Installation
+
+1. Clone the repository
+
+```bash
+git clone <repository-url>
+cd insta_ai
+```
+
+2. Install dependencies
+
+```bash
+npm install
+```
+
+3. Set up environment variables
+   Create a `.env.local` file in the root directory with the following variables:
+
+```env
+# Database
+MONGODB_URL=your_mongodb_connection_string
+
+# Email Configuration
+HOST=your_smtp_host
+EMAIL_PORT=587
+SECURE=false
+USER=your_email
+PASS=your_email_password
+
+# NextAuth Configuration
+NEXTAUTH_SECRET=your_nextauth_secret_key_here
+NEXTAUTH_URL=http://localhost:3000
+
+# Instagram OAuth Configuration
+INSTAGRAM_CLIENT_ID=your_instagram_client_id
+INSTAGRAM_CLIENT_SECRET=your_instagram_client_secret
+```
+
+### Instagram OAuth Setup
+
+1. Go to [Instagram Basic Display](https://developers.facebook.com/docs/instagram-basic-display-api/getting-started)
+2. Create a new app
+3. Add Instagram Basic Display product
+4. Configure OAuth Redirect URIs:
+   - `http://localhost:3000/api/auth/callback/instagram` (development)
+   - `https://yourdomain.com/api/auth/callback/instagram` (production)
+5. Get your Client ID and Client Secret
+6. Add them to your `.env.local` file
+
+### Running the Application
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The application will be available at `http://localhost:3000`
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Authentication
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The app supports two authentication methods:
 
-## Learn More
+1. **Email/Password**: Traditional signup and login
+2. **Instagram OAuth**: Sign in with Instagram account
 
-To learn more about Next.js, take a look at the following resources:
+### Instagram Integration
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+When users sign in with Instagram:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Their Instagram profile data is automatically imported
+- They get instant access to Instagram-connected features
+- No email verification required for Instagram users
 
-## Deploy on Vercel
+## API Routes
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `/api/user/sign-up` - Email/password registration
+- `/api/auth/[...nextauth]` - NextAuth authentication
+- `/api/auth/signout` - User logout
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Tech Stack
+
+- **Frontend**: Next.js 15, React 19, Tailwind CSS
+- **Backend**: Next.js API Routes
+- **Database**: MongoDB with Mongoose
+- **Authentication**: NextAuth.js
+- **UI Components**: shadcn/ui
+- **Animations**: Framer Motion

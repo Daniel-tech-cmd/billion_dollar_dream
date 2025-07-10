@@ -4,6 +4,11 @@ import { FaInstagram } from "react-icons/fa";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import {
+  signIn,
+  useSession,
+} from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 const floatingIcons = [
   {
@@ -31,6 +36,79 @@ const floatingIcons = [
 export default function Login() {
   const [showPassword, setShowPassword] =
     useState(false);
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [instagramLoading, setInstagramLoading] =
+    useState(false);
+  const [error, setError] = useState("");
+  const { data: session } = useSession();
+  const router = useRouter();
+
+  // Redirect if already logged in
+  React.useEffect(() => {
+    if (session) {
+      router.push("/dashboard");
+    }
+  }, [session, router]);
+
+  const handleChange = (e) => {
+    setForm((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+    try {
+      const result = await signIn("credentials", {
+        email: form.email,
+        password: form.password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setError("Invalid email or password.");
+      } else if (result?.ok) {
+        router.push("/dashboard");
+      }
+    } catch (error) {
+      setError("Login failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleInstagramSignIn = async () => {
+    setInstagramLoading(true);
+    setError("");
+    try {
+      const result = await signIn("instagram", {
+        callbackUrl: "/dashboard",
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setError(
+          "Instagram sign-in failed. Please try again."
+        );
+      } else if (result?.ok) {
+        router.push("/dashboard");
+      }
+    } catch (error) {
+      setError(
+        "Instagram sign-in failed. Please try again."
+      );
+    } finally {
+      setInstagramLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen w-full flex flex-col md:flex-row">
       {/* Left: Form */}
@@ -43,9 +121,9 @@ export default function Login() {
                 "linear-gradient(90deg, #E354AD 0%, #A742F1 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
+              margin: 0,
               width: "100%",
               textAlign: "center",
-              margin: 0,
               padding: 0,
             }}
           >
@@ -59,14 +137,29 @@ export default function Login() {
               padding: 0,
             }}
           >
-            Login to your account
+            Sign in to your account to continue
           </p>
-          <form className="space-y-5">
+          {/* Error Alert */}
+          {error && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-red-600 text-sm">
+                {error}
+              </p>
+            </div>
+          )}
+          <form
+            className="space-y-5"
+            onSubmit={handleSubmit}
+          >
             <div className="relative">
               <input
                 type="email"
+                name="email"
+                value={form.email}
+                onChange={handleChange}
                 placeholder="Email Address"
                 className="w-full rounded-xl border border-gray-200 px-4 py-2 text-base focus:outline-none focus:ring-2 focus:ring-[#A742F1] transition placeholder-gray-400 bg-white pr-10"
+                required
               />
             </div>
             <div className="relative">

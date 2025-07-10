@@ -4,6 +4,16 @@ import { FaInstagram } from "react-icons/fa";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import {
+  signIn,
+  useSession,
+} from "next-auth/react";
+import { useRouter } from "next/navigation";
+import {
+  Alert,
+  AlertTitle,
+  AlertDescription,
+} from "@/components/ui/alert";
 
 const floatingIcons = [
   {
@@ -31,6 +41,107 @@ const floatingIcons = [
 export default function SignUp() {
   const [showPassword, setShowPassword] =
     useState(false);
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [instagramLoading, setInstagramLoading] =
+    useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const { data: session } = useSession();
+  const router = useRouter();
+
+  // Redirect if already logged in
+  React.useEffect(() => {
+    if (session) {
+      router.push("/dashboard");
+    }
+  }, [session, router]);
+
+  const handleChange = (e) => {
+    setForm((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+    setLoading(true);
+    try {
+      const res = await fetch(
+        "/api/user/sign-up",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: form.name,
+            email: form.email,
+            password: form.password,
+          }),
+        }
+      );
+      const data = await res.json();
+      if (!res.ok) {
+        setError(
+          data.error ||
+            "Something went wrong. Please try again."
+        );
+      } else {
+        setSuccess(
+          data.message ||
+            "Signup successful! Please check your email."
+        );
+        setForm({
+          name: "",
+          email: "",
+          password: "",
+        });
+      }
+    } catch (err) {
+      setError(
+        "Network error. Please try again later."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleInstagramSignIn = async () => {
+    setInstagramLoading(true);
+    setError("");
+    try {
+      const result = await signIn("instagram", {
+        callbackUrl: "/dashboard",
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setError(
+          "Instagram sign-in failed. Please try again."
+        );
+      } else if (result?.ok) {
+        setSuccess(
+          "Successfully signed in with Instagram!"
+        );
+        router.push("/dashboard");
+      }
+    } catch (error) {
+      setError(
+        "Instagram sign-in failed. Please try again."
+      );
+    } finally {
+      setInstagramLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen w-full flex flex-col md:flex-row">
       {/* Left: Form */}
@@ -62,17 +173,48 @@ export default function SignUp() {
             Create your account and start your
             journey
           </p>
-          <form className="space-y-5">
+          {/* Error/Success Alert */}
+          {error && (
+            <Alert
+              variant="destructive"
+              className="mb-4"
+            >
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>
+                {error}
+              </AlertDescription>
+            </Alert>
+          )}
+          {success && (
+            <Alert className="mb-4">
+              <AlertTitle>Success</AlertTitle>
+              <AlertDescription>
+                {success}
+              </AlertDescription>
+            </Alert>
+          )}
+          <form
+            className="space-y-5"
+            onSubmit={handleSubmit}
+          >
             <input
               type="text"
+              name="name"
+              value={form.name}
+              onChange={handleChange}
               placeholder="Full Name"
               className="w-full rounded-xl border border-gray-200 px-4 py-2 text-base focus:outline-none focus:ring-2 focus:ring-[#A742F1] transition placeholder-gray-400 bg-white"
+              required
             />
             <div className="relative">
               <input
                 type="email"
+                name="email"
+                value={form.email}
+                onChange={handleChange}
                 placeholder="Email Address"
                 className="w-full rounded-xl border border-gray-200 px-4 py-2 text-base focus:outline-none focus:ring-2 focus:ring-[#A742F1] transition placeholder-gray-400 bg-white pr-10"
+                required
               />
             </div>
             <div className="relative">
@@ -82,8 +224,13 @@ export default function SignUp() {
                     ? "text"
                     : "password"
                 }
+                name="password"
+                value={form.password}
+                onChange={handleChange}
                 placeholder="Password"
                 className="w-full rounded-xl border border-gray-200 px-4 py-2 text-base focus:outline-none focus:ring-2 focus:ring-[#A742F1] transition placeholder-gray-400 bg-white pr-10"
+                required
+                minLength={6}
               />
               <button
                 type="button"
@@ -107,9 +254,34 @@ export default function SignUp() {
             </div>
             <button
               type="submit"
-              className="w-full py-2 rounded-xl font-semibold text-sm bg-gradient-to-r from-[#E354AD] to-[#A742F1] text-white hover:opacity-90 transition mb-2 mt-2 cursor-pointer"
+              className="w-full py-2 rounded-xl font-semibold text-sm bg-gradient-to-r from-[#E354AD] to-[#A742F1] text-white hover:opacity-90 transition mb-2 mt-2 cursor-pointer flex items-center justify-center"
+              disabled={loading}
             >
-              Sign Up
+              {loading ? (
+                <svg
+                  className="animate-spin mr-2 h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                  ></path>
+                </svg>
+              ) : null}
+              {loading
+                ? "Signing Up..."
+                : "Sign Up"}
             </button>
             <div className="flex items-center my-2">
               <div className="flex-1 h-px bg-gray-200" />
@@ -120,10 +292,37 @@ export default function SignUp() {
             </div>
             <button
               type="button"
-              className="w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-[#E354AD] text-[#E354AD] font-semibold text-sm bg-white hover:bg-[#F8E1F2] transition cursor-pointer"
+              onClick={handleInstagramSignIn}
+              disabled={instagramLoading}
+              className="w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-[#E354AD] text-[#E354AD] font-semibold text-sm bg-white hover:bg-[#F8E1F2] transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <FaInstagram className="text-xl" />{" "}
-              Continue with Instagram
+              {instagramLoading ? (
+                <svg
+                  className="animate-spin mr-2 h-5 w-5 text-[#E354AD]"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                  ></path>
+                </svg>
+              ) : (
+                <FaInstagram className="text-xl" />
+              )}
+              {instagramLoading
+                ? "Connecting..."
+                : "Continue with Instagram"}
             </button>
           </form>
           <div className="text-center mt-6 text-sm text-gray-500">

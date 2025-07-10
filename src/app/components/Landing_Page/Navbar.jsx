@@ -5,7 +5,7 @@ import React, {
 } from "react";
 import Link from "next/link";
 import { FiMenu, FiX } from "react-icons/fi";
-
+// 5g1aQYkqemyGtUZK
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -49,7 +49,7 @@ export default function Navbar() {
           : { background: "transparent" }
       }
     >
-      <div className="flex max-w-[1000px] flex mx-auto items-center justify-between pt-4 pb-6 px-4">
+      <div className="flex max-w-[1000px] mx-auto items-center justify-between pt-4 pb-6 px-4">
         {" "}
         {/* Logo */}
         <div>
@@ -93,7 +93,7 @@ export default function Navbar() {
               Sign In
             </Link>
             <Link
-              href="/user/signup"
+              href="/user/register"
               className="text-[12px] bg-gradient-to-r from-[#FF4D8F] to-[#A742F1] text-white px-4 py-2 font-bold rounded-[7.36px] hover:opacity-90 transition duration-300"
             >
               Get Started
@@ -161,7 +161,7 @@ export default function Navbar() {
                   Sign In
                 </Link>
                 <Link
-                  href="/user/signup"
+                  href="/user/register"
                   className="text-[13px] bg-gradient-to-r from-[#FF4D8F] to-[#A742F1] text-white px-4 py-2 font-bold rounded-[7.36px] hover:opacity-90 transition duration-300"
                   onClick={() => setOpen(false)}
                 >
