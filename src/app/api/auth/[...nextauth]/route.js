@@ -1,5 +1,5 @@
 import NextAuth from "next-auth";
-import InstagramProvider from "next-auth/providers/instagram";
+import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import clientPromise from "@/lib/mongodb";
@@ -7,18 +7,33 @@ import User from "@/app/models/user";
 import { connectToDB } from "@/utils/database";
 import bcrypt from "bcrypt";
 
+// Debug: Check environment variables
+console.log(
+  "Google Client ID:",
+  process.env.GOOGLE_CLIENT_ID ? "Set" : "NOT SET"
+);
+console.log(
+  "Google Client Secret:",
+  process.env.GOOGLE_CLIENT_SECRET
+    ? "Set"
+    : "NOT SET"
+);
+console.log(
+  "NextAuth Secret:",
+  process.env.NEXTAUTH_SECRET ? "Set" : "NOT SET"
+);
+console.log(
+  "NextAuth URL:",
+  process.env.NEXTAUTH_URL || "NOT SET"
+);
+
 export const authOptions = {
   adapter: MongoDBAdapter(clientPromise),
   providers: [
-    InstagramProvider({
-      clientId: process.env.INSTAGRAM_CLIENT_ID,
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret:
-        process.env.INSTAGRAM_CLIENT_SECRET,
-      authorization: {
-        params: {
-          scope: "user_profile,user_media",
-        },
-      },
+        process.env.GOOGLE_CLIENT_SECRET,
     }),
     CredentialsProvider({
       name: "credentials",
@@ -61,9 +76,7 @@ export const authOptions = {
             id: user._id.toString(),
             email: user.email,
             name: user.name,
-            instagramHandle: user.instagramHandle,
-            instagramConnected:
-              user.instagramConnected,
+            googleId: user.googleId,
           };
         } catch (error) {
           console.error(
@@ -77,42 +90,71 @@ export const authOptions = {
   ],
   callbacks: {
     async signIn({ user, account, profile }) {
-      if (account?.provider === "instagram") {
+      console.log("SignIn callback triggered:", {
+        provider: account?.provider,
+        profile,
+      });
+      if (account?.provider === "google") {
         try {
           await connectToDB();
-
-          // Check if user already exists
           let existingUser = await User.findOne({
-            instagramUserId: profile.id,
+            googleId: profile.sub,
           });
-
+          // If not found by googleId, try to find by email (for merging accounts)
+          if (!existingUser && profile.email) {
+            existingUser = await User.findOne({
+              email: profile.email,
+            });
+            if (existingUser) {
+              // Merge: add googleId to existing user
+              existingUser.googleId = profile.sub;
+              existingUser.isEmailVerified =
+                profile.email_verified;
+              existingUser.avatar =
+                profile.picture;
+              await existingUser.save();
+              console.log(
+                "Merged Google account with existing email user:",
+                existingUser._id
+              );
+            }
+          }
           if (!existingUser) {
-            // Create new user with Instagram data
+            // Create new user with Google data
             existingUser = new User({
-              name:
-                profile.name || profile.username,
-              email: `${profile.username}@instagram.com`, // Instagram doesn't provide email
-              instagramHandle: profile.username,
-              instagramUserId: profile.id,
-              instagramConnected: true,
-              instagramAccessToken:
-                account.access_token,
-              isEmailVerified: true, // Instagram users are pre-verified
+              name: profile.name,
+              email: profile.email,
+              googleId: profile.sub,
+              isEmailVerified:
+                profile.email_verified,
+              avatar: profile.picture,
               password:
-                "instagram_oauth_" +
+                "google_oauth_" +
                 Math.random()
                   .toString(36)
-                  .substr(2, 9), // Generate a random password
+                  .substr(2, 9),
             });
             await existingUser.save();
+            console.log(
+              "Created new user with Google:",
+              existingUser._id
+            );
           } else {
-            // Update existing user's Instagram connection
-            existingUser.instagramConnected = true;
-            existingUser.instagramAccessToken =
-              account.access_token;
+            // Optionally update fields on every login
             existingUser.lastLogin = new Date();
+            existingUser.avatar = profile.picture;
             await existingUser.save();
+            console.log(
+              "Updated existing user with Google:",
+              existingUser._id
+            );
           }
+          // Attach user to session
+          user.id = existingUser._id.toString();
+          user.googleId = existingUser.googleId;
+          user.name = existingUser.name;
+          user.email = existingUser.email;
+          user.avatar = existingUser.avatar;
         } catch (error) {
           console.error(
             "Error in signIn callback:",
@@ -126,31 +168,20 @@ export const authOptions = {
     async session({ session, user, token }) {
       if (session?.user) {
         session.user.id = user?.id || token?.sub;
-        // Add Instagram info to session
-        session.user.instagramHandle =
-          user?.instagramHandle ||
-          token?.instagramHandle;
-        session.user.instagramConnected =
-          user?.instagramConnected ||
-          token?.instagramConnected;
+        session.user.googleId =
+          user?.googleId || token?.googleId;
       }
       return session;
     },
     async jwt({ token, user, account }) {
       if (
-        account?.provider === "instagram" &&
+        account?.provider === "google" &&
         user
       ) {
-        token.instagramHandle =
-          user.instagramHandle;
-        token.instagramConnected =
-          user.instagramConnected;
+        token.googleId = user.googleId;
       }
       if (user) {
-        token.instagramHandle =
-          user.instagramHandle;
-        token.instagramConnected =
-          user.instagramConnected;
+        token.googleId = user.googleId;
       }
       return token;
     },
@@ -163,6 +194,7 @@ export const authOptions = {
     strategy: "jwt",
   },
   secret: process.env.NEXTAUTH_SECRET,
+  debug: process.env.NODE_ENV === "development",
 };
 
 const handler = NextAuth(authOptions);

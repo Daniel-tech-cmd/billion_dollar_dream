@@ -24,6 +24,11 @@ const userSchema = new Schema(
           "Please enter a valid email address",
       },
     },
+    googleId: {
+      type: String,
+      unique: true,
+      sparse: true,
+    },
     password: {
       type: String,
       required: true,

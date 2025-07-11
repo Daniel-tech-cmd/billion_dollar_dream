@@ -9,6 +9,7 @@ import {
   useSession,
 } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { FaGoogle } from "react-icons/fa";
 
 const floatingIcons = [
   {
@@ -41,7 +42,7 @@ export default function Login() {
     password: "",
   });
   const [loading, setLoading] = useState(false);
-  const [instagramLoading, setInstagramLoading] =
+  const [googleLoading, setGoogleLoading] =
     useState(false);
   const [error, setError] = useState("");
   const { data: session } = useSession();
@@ -84,28 +85,28 @@ export default function Login() {
     }
   };
 
-  const handleInstagramSignIn = async () => {
-    setInstagramLoading(true);
+  const handleGoogleSignIn = async () => {
+    setGoogleLoading(true);
     setError("");
     try {
-      const result = await signIn("instagram", {
+      const result = await signIn("google", {
         callbackUrl: "/dashboard",
         redirect: false,
       });
 
       if (result?.error) {
         setError(
-          "Instagram sign-in failed. Please try again."
+          "Google sign-in failed. Please try again."
         );
       } else if (result?.ok) {
         router.push("/dashboard");
       }
     } catch (error) {
       setError(
-        "Instagram sign-in failed. Please try again."
+        "Google sign-in failed. Please try again."
       );
     } finally {
-      setInstagramLoading(false);
+      setGoogleLoading(false);
     }
   };
 
@@ -169,8 +170,12 @@ export default function Login() {
                     ? "text"
                     : "password"
                 }
+                name="password"
+                value={form.password}
+                onChange={handleChange}
                 placeholder="Password"
                 className="w-full rounded-xl border border-gray-200 px-4 py-2 text-base focus:outline-none focus:ring-2 focus:ring-[#A742F1] transition placeholder-gray-400 bg-white pr-10"
+                required
               />
               <button
                 type="button"
@@ -194,9 +199,34 @@ export default function Login() {
             </div>
             <button
               type="submit"
-              className="w-full py-2 rounded-xl font-semibold text-sm bg-gradient-to-r from-[#E354AD] to-[#A742F1] text-white hover:opacity-90 transition mb-2 mt-2 cursor-pointer"
+              className="w-full py-2 rounded-xl font-semibold text-sm bg-gradient-to-r from-[#E354AD] to-[#A742F1] text-white hover:opacity-90 transition mb-2 mt-2 cursor-pointer flex items-center justify-center"
+              disabled={loading}
             >
-              Login
+              {loading ? (
+                <svg
+                  className="animate-spin mr-2 h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                  ></path>
+                </svg>
+              ) : null}
+              {loading
+                ? "Signing In..."
+                : "Login"}
             </button>
             <div className="flex items-center my-2">
               <div className="flex-1 h-px bg-gray-200" />
@@ -207,16 +237,43 @@ export default function Login() {
             </div>
             <button
               type="button"
-              className="w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-[#E354AD] text-[#E354AD] font-semibold text-sm bg-white hover:bg-[#F8E1F2] transition cursor-pointer"
+              onClick={handleGoogleSignIn}
+              disabled={googleLoading}
+              className="w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-[#E354AD] text-[#E354AD] font-semibold text-sm bg-white hover:bg-[#F8E1F2] transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <FaInstagram className="text-xl" />{" "}
-              Continue with Instagram
+              {googleLoading ? (
+                <svg
+                  className="animate-spin mr-2 h-5 w-5 text-[#E354AD]"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                  ></path>
+                </svg>
+              ) : (
+                <FaGoogle className="text-xl" />
+              )}
+              {googleLoading
+                ? "Connecting..."
+                : "Continue with Google"}
             </button>
           </form>
           <div className="text-center mt-6 text-sm text-gray-500">
             Don&apos;t have an account?{" "}
             <a
-              href="#"
+              href="/user/register"
               className="text-[#A742F1] font-semibold hover:underline"
             >
               Sign up

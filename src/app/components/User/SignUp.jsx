@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { FaInstagram } from "react-icons/fa";
+import { FaGoogle } from "react-icons/fa";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import Image from "next/image";
 import { motion } from "framer-motion";
@@ -47,7 +47,7 @@ export default function SignUp() {
     password: "",
   });
   const [loading, setLoading] = useState(false);
-  const [instagramLoading, setInstagramLoading] =
+  const [googleLoading, setGoogleLoading] =
     useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -114,31 +114,30 @@ export default function SignUp() {
     }
   };
 
-  const handleInstagramSignIn = async () => {
-    setInstagramLoading(true);
+  const handleGoogleSignIn = async () => {
+    setGoogleLoading(true);
     setError("");
     try {
-      const result = await signIn("instagram", {
+      const result = await signIn("google", {
         callbackUrl: "/dashboard",
         redirect: false,
       });
-
       if (result?.error) {
         setError(
-          "Instagram sign-in failed. Please try again."
+          "Google sign-in failed. Please try again."
         );
       } else if (result?.ok) {
         setSuccess(
-          "Successfully signed in with Instagram!"
+          "Successfully signed in with Google!"
         );
         router.push("/dashboard");
       }
     } catch (error) {
       setError(
-        "Instagram sign-in failed. Please try again."
+        "Google sign-in failed. Please try again."
       );
     } finally {
-      setInstagramLoading(false);
+      setGoogleLoading(false);
     }
   };
 
@@ -292,11 +291,11 @@ export default function SignUp() {
             </div>
             <button
               type="button"
-              onClick={handleInstagramSignIn}
-              disabled={instagramLoading}
+              onClick={handleGoogleSignIn}
+              disabled={googleLoading}
               className="w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-[#E354AD] text-[#E354AD] font-semibold text-sm bg-white hover:bg-[#F8E1F2] transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {instagramLoading ? (
+              {googleLoading ? (
                 <svg
                   className="animate-spin mr-2 h-5 w-5 text-[#E354AD]"
                   xmlns="http://www.w3.org/2000/svg"
@@ -318,11 +317,11 @@ export default function SignUp() {
                   ></path>
                 </svg>
               ) : (
-                <FaInstagram className="text-xl" />
+                <FaGoogle className="text-xl" />
               )}
-              {instagramLoading
+              {googleLoading
                 ? "Connecting..."
-                : "Continue with Instagram"}
+                : "Continue with Google"}
             </button>
           </form>
           <div className="text-center mt-6 text-sm text-gray-500">
