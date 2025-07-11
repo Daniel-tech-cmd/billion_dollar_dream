@@ -10,6 +10,7 @@ import {
 } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { FaGoogle } from "react-icons/fa";
+import Link from "next/link";
 
 const floatingIcons = [
   {
@@ -272,12 +273,12 @@ export default function Login() {
           </form>
           <div className="text-center mt-6 text-sm text-gray-500">
             Don&apos;t have an account?{" "}
-            <a
+            <Link
               href="/user/register"
               className="text-[#A742F1] font-semibold hover:underline"
             >
               Sign up
-            </a>
+            </Link>
           </div>
         </div>
       </div>

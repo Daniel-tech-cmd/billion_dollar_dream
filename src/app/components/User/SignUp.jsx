@@ -14,6 +14,7 @@ import {
   AlertTitle,
   AlertDescription,
 } from "@/components/ui/alert";
+import Link from "next/link";
 
 const floatingIcons = [
   {
@@ -326,12 +327,12 @@ export default function SignUp() {
           </form>
           <div className="text-center mt-6 text-sm text-gray-500">
             Already have an account?{" "}
-            <a
-              href="#"
+            <Link
+              href="/user/login"
               className="text-[#A742F1] font-semibold hover:underline"
             >
               Sign in
-            </a>
+            </Link>
           </div>
         </div>
       </div>

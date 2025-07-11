@@ -120,7 +120,20 @@ export const authOptions = {
             }
           }
           if (!existingUser) {
-            // Create new user with Google data
+            // Generate a unique username
+            let baseUsername = profile.name
+              ? profile.name
+                  .replace(/\s+/g, "")
+                  .toLowerCase()
+              : profile.email.split("@")[0];
+            let username = baseUsername;
+            let suffix = 1;
+            while (
+              await User.findOne({ username })
+            ) {
+              username = `${baseUsername}${suffix++}`;
+            }
+
             existingUser = new User({
               name: profile.name,
               email: profile.email,
@@ -133,6 +146,7 @@ export const authOptions = {
                 Math.random()
                   .toString(36)
                   .substr(2, 9),
+              username, // <-- set unique username
             });
             await existingUser.save();
             console.log(
